@@ -7,7 +7,7 @@ import type { ZudokuConfig } from "zudoku";
  */
 const config: ZudokuConfig = {
   site: {
-    title: "My Developer Portal",
+    title: "Developer Portal",
     logo: {
       src: {
         light: "https://cdn.zuplo.com/assets/my-dev-portal-light.svg",
@@ -20,45 +20,6 @@ const config: ZudokuConfig = {
     description: "Developer Portal",
   },
   navigation: [
-    {
-      type: "category",
-      label: "Documentation",
-      items: [
-        {
-          type: "category",
-          label: "Getting Started",
-          icon: "sparkles",
-          items: [
-            {
-              type: "doc",
-              file: "introduction",
-            },
-            {
-              type: "doc",
-              file: "markdown",
-            },
-          ],
-        },
-        {
-          type: "category",
-          label: "Useful Links",
-          collapsible: false,
-          icon: "link",
-          items: [
-            {
-              type: "link",
-              label: "Zuplo Docs",
-              to: "https://zuplo.com/docs/dev-portal/introduction",
-            },
-            {
-              type: "link",
-              label: "Developer Portal Docs",
-              to: "https://zuplo.com/docs/dev-portal/introduction",
-            },
-          ],
-        },
-      ],
-    },
     {
       type: "link",
       to: "/api",

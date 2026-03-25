@@ -1,8 +1,710 @@
 {
   "openapi": "3.1.0",
   "info": {
+    "title": "Flowise API",
     "version": "1.0.0",
-    "title": "My Zuplo API"
+    "description": "Flowise API Gateway deployed on Zuplo with interactive documentation for developers."
   },
-  "paths": {}
+  "servers": [
+    {
+      "url": "https://flowise-chatbot-1-main-183ddb7.d2.zuplo.dev",
+      "description": "Dev environment"
+    }
+  ],
+  "paths": {
+    "/test": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Test endpoint",
+        "description": "A simple endpoint to test Zuplo gateway deployment.",
+        "operationId": "test",
+        "tags": [
+          "Test"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                },
+                "example": {
+                  "message": "Test successful"
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/test)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "rate-limit-inbound"
+            ]
+          }
+        }
+      }
+    },
+    "/face-verify": {
+      "post": {
+        "summary": "Compare Faces",
+        "description": "Compare two face images (Base64-encoded) and return matched faces with confidence and face rectangles.",
+        "operationId": "face-verify",
+        "tags": [
+          "Face Verification"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "encoded_image1": {
+                    "type": "string",
+                    "description": "Base64-encoded first image"
+                  },
+                  "encoded_image2": {
+                    "type": "string",
+                    "description": "Base64-encoded second image"
+                  }
+                },
+                "required": [
+                  "encoded_image1",
+                  "encoded_image2"
+                ]
+              },
+              "example": {
+                "encoded_image1": "iVBORw0KGgoAAAANSUhEUgAA...",
+                "encoded_image2": "iVBORw0KGgoAAAANSUhEUgAA..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Face verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "matchedFaces": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "matchResult": {
+                            "type": "integer",
+                            "description": "1 if faces match, 0 otherwise"
+                          },
+                          "confidence": {
+                            "type": "number",
+                            "description": "Confidence score"
+                          },
+                          "image1_face": {
+                            "type": "object",
+                            "properties": {
+                              "faceRectangle": {
+                                "type": "object",
+                                "properties": {
+                                  "x": {
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "type": "integer"
+                                  },
+                                  "width": {
+                                    "type": "integer"
+                                  },
+                                  "height": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y",
+                                  "width",
+                                  "height"
+                                ]
+                              },
+                              "quality": {
+                                "type": "number",
+                                "description": "Quality score of face in image1"
+                              }
+                            },
+                            "required": [
+                              "faceRectangle",
+                              "quality"
+                            ]
+                          },
+                          "image2_face": {
+                            "type": "object",
+                            "properties": {
+                              "faceRectangle": {
+                                "type": "object",
+                                "properties": {
+                                  "x": {
+                                    "type": "integer"
+                                  },
+                                  "y": {
+                                    "type": "integer"
+                                  },
+                                  "width": {
+                                    "type": "integer"
+                                  },
+                                  "height": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "x",
+                                  "y",
+                                  "width",
+                                  "height"
+                                ]
+                              },
+                              "quality": {
+                                "type": "number",
+                                "description": "Quality score of face in image2"
+                              }
+                            },
+                            "required": [
+                              "faceRectangle",
+                              "quality"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "matchResult",
+                          "confidence",
+                          "image1_face",
+                          "image2_face"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "matchedFaces"
+                  ]
+                },
+                "example": {
+                  "matchedFaces": [
+                    {
+                      "matchResult": 1,
+                      "confidence": 129,
+                      "image1_face": {
+                        "faceRectangle": {
+                          "x": 26,
+                          "y": 46,
+                          "width": 114,
+                          "height": 139
+                        },
+                        "quality": 93
+                      },
+                      "image2_face": {
+                        "faceRectangle": {
+                          "x": 158,
+                          "y": 38,
+                          "width": 585,
+                          "height": 705
+                        },
+                        "quality": 96
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "faceverify",
+            "module": "$import(./modules/face-verify-handler)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound"
+            ]
+          }
+        }
+      }
+    },
+    "/image-ocr": {
+      "post": {
+        "summary": "Image OCR",
+        "description": "Accepts a multipart/form-data image and returns extracted text, confidence scores, and image metadata.",
+        "operationId": "image-ocr",
+        "tags": [
+          "Image OCR"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image file to process. Supported formats: JPEG, PNG, GIF, WEBP, BMP, TIFF. Max size: 10 MB."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OCR successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "request_id": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "Extracted text from the image."
+                    },
+                    "is_handwritten": {
+                      "type": "boolean"
+                    },
+                    "is_printed": {
+                      "type": "boolean"
+                    },
+                    "confidence": {
+                      "type": "number"
+                    },
+                    "confidence_rate": {
+                      "type": "number"
+                    },
+                    "image_width": {
+                      "type": "number"
+                    },
+                    "image_height": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file or malformed request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "OCR service returned an error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object",
+                      "description": "Optional details from OCR service"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server misconfiguration or unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "imageocr",
+            "module": "$import(./modules/image-ocr-handler)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound"
+            ]
+          }
+        }
+      }
+    },
+    "/document-ocr": {
+      "post": {
+        "summary": "Document OCR",
+        "description": "Accepts a PDF file (multipart/form-data), uploads it to Mathpix, and returns structured line-by-line JSON along with the assigned `pdf_id`.",
+        "operationId": "document-ocr",
+        "tags": [
+          "Document OCR"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "PDF file to process. Max size: 50 MB."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pdf_id": {
+                      "type": "string"
+                    },
+                    "lines": {
+                      "type": "object",
+                      "description": "Structured JSON extracted from PDF"
+                    }
+                  },
+                  "required": [
+                    "pdf_id",
+                    "lines"
+                  ]
+                },
+                "example": {
+                  "pdf_id": "123e4567-e89b-12d3-a456-426614174000",
+                  "lines": {
+                    "0": {
+                      "text": "First line of PDF"
+                    },
+                    "1": {
+                      "text": "Second line of PDF"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file or malformed request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Processing failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "pdf_id": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server misconfiguration or unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "documentocr",
+            "module": "$import(./modules/document-ocr-handler)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound"
+            ]
+          }
+        }
+      }
+    },
+    "/documentai": {
+      "post": {
+        "summary": "Google Document AI",
+        "description": "Accepts a Base64-encoded document (PDF or image), sends it to Google Document AI, and returns extracted text, entities, and page info.",
+        "operationId": "document-ai",
+        "tags": [
+          "Document AI"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "base64Data": {
+                    "type": "string",
+                    "description": "Base64-encoded document content"
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "description": "Optional MIME type, e.g., 'application/pdf', 'image/png'. Defaults to PDF."
+                  }
+                },
+                "required": [
+                  "base64Data"
+                ]
+              },
+              "example": {
+                "base64Data": "JVBERi0xLjQKJcTl8uXr...",
+                "mimeType": "application/pdf"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "mimeType": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "pages": {
+                      "type": "integer"
+                    },
+                    "entities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string"
+                          },
+                          "mentionText": {
+                            "type": "string"
+                          },
+                          "confidence": {
+                            "type": "number"
+                          }
+                        }
+                      }
+                    },
+                    "raw": {
+                      "type": "object",
+                      "description": "Full raw response from Document AI"
+                    }
+                  },
+                  "required": [
+                    "text",
+                    "mimeType",
+                    "pages",
+                    "entities",
+                    "raw"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid JSON or missing base64Data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server misconfiguration or failed token generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Failed to reach Document AI service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/documentai-handler)"
+          },
+          "policies": {
+            "inbound": [
+              "api-key-inbound"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Test",
+      "description": "A simple endpoint to test Zuplo gateway deployment."
+    },
+    {
+      "name": "Face Verification",
+      "description": "Compare two face images (Base64-encoded) and return matched faces with confidence and face rectangles."
+    },
+    {
+      "name": "Image OCR",
+      "description": "Accepts a multipart/form-data image and returns extracted text, confidence scores, and image metadata."
+    },
+    {
+      "name": "Document OCR",
+      "description": "Accepts a PDF file (multipart/form-data), uploads it to Mathpix, and returns structured line-by-line JSON along with the assigned pdf_id"
+    },
+    {
+      "name": "Google Document AI",
+      "description": "Accepts a Base64-encoded document (PDF or image), sends it to Google Document AI, and returns extracted text, entities, and page info"
+    }
+  ]
 }
